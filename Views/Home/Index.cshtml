@@ -1,0 +1,40 @@
+﻿@{
+    Layout = null;//для представления не используется мастер страница
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index</title>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700,800,900&amp;subset=cyrillic" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700&amp;subset=cyrillic-ext" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="container-fluid a_block">
+        <div class="row align-items-center no-gutters">
+
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="p-2 h3">Тесты на знание основ C#</div>
+                </div>
+            </div>
+            <div class="container">
+                <h3>Тeсты на знание основ С#</h3>
+                <div>
+                    @{
+                        foreach (var line in ViewBag.QuestionAnswer) {
+                            <div>@line.Question</div>
+                        }
+                }
+            </div>
+        </div>
+
+</body>
+</html>
