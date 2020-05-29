@@ -1,0 +1,4 @@
+ViewBag.IsItRightAnswer -> colorGreen or colorRed
+ViewBag.DisabledAllSubjects -> или ничего или disabled(для кнопки AllSubjects)
+ViewBag.DisabledCheck -> или ничего или disabled(для кнопки checkAnswer)
+ViewBag.DisabledNext -> или ничего или disabled(для кнопки nextQuestion)
