@@ -1,40 +1,170 @@
 ﻿@{
-    Layout = null;//для представления не используется мастер страница
+  Layout = null;//для представления не используется мастер страница
 }
 
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Index</title>
-    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700,800,900&amp;subset=cyrillic" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700&amp;subset=cyrillic-ext" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-    @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Index</title>
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700,800,900&amp;subset=cyrillic" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700&amp;subset=cyrillic-ext" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
+  <link rel="shortcut icon" href="~/Content/images/favicon.ico" type="image/x-icon">
+  @Styles.Render("~/Content/css")
+  @Scripts.Render("~/bundles/modernizr")
 </head>
 <body>
-    <div class="container-fluid a_block">
-        <div class="row align-items-center no-gutters">
+  @* Model for this view is QuestionAnswer *@
+  @model FirstTryMVC5.Models.QuestionAnswer
+  @*<div class="container">
+      <h3>Тeсты на знание основ С#</h3>
+      <div>
+        @{
+          foreach (var line in ViewBag.QuestionAnswer) {
+            <div>@line.Question</div>
+          }
+        }
+      </div>
+    </div>*@
+  <div class="container-fluid a_block">
+    <div class="row align-items-center no-gutters">
 
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="p-2 h3">Тесты на знание основ C#</div>
-                </div>
-            </div>
-            <div class="container">
-                <h3>Тeсты на знание основ С#</h3>
-                <div>
-                    @{
-                        foreach (var line in ViewBag.QuestionAnswer) {
-                            <div>@line.Question</div>
-                        }
-                }
-            </div>
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="p-2 h3">Тесты на знание основ C#</div>
         </div>
-
+      </div>
+      <div class="container">
+        @using (Html.BeginForm("Index", "Home", FormMethod.Post)) {
+          <div class="row border rounded">
+            <div class="col-12">
+              <div class="row justify-content-around my-3">
+                <div class="col-5">
+                  <div class="row justify-content-center">
+                    @*--------------------------------*@
+                    @*<button class="btn btn_my btn-block">Выбрать тему</button>*@
+                    @*@foreach (var item in ViewBag.AllSubjects) {
+      <p>@item</p>
+    }*@
+                    <div class="dropdown btn-block">
+                      <button class="btn btn-block btn_my dropdown-toggle" type="submit"  name="action" value="chooseSubject" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        @ViewBag.Subject
+                      </button>
+                      <div class="dropdown-menu dropdown_my" aria-labelledby="dropdownMenu2">
+                        @foreach (var item in ViewBag.AllSubjects) {
+                          <button class="dropdown-item dropdown_item_my" type="submit" name="action" value="chooseSubject">@item</button>
+                        }
+                      </div>
+                    </div>
+                    @*-------------------------------*@
+                  </div>
+                </div>
+                <div class="col-5">
+                  <div class="row justify-content-center">
+                    <button class="btn btn-block btn_my @ViewBag.DisabledAllSubjects" type="submit" name="action" value="allSubjects" @ViewBag.DisabledAllSubjects>Все темы</button>
+                  </div>
+                </div>
+              </div>
+              @*<hr color="white" />*@
+              <div class="row">
+                <div class="col-12">
+                  <!--<form method="post">-->
+                  <div class="row">
+                    <div class="col-7 border-right border-top border-bottom">
+                      <input type="hidden" name="Id" value="@Model.Id" />
+                      <input type="hidden" name="LeadUp" value="@Model.LeadUp" />
+                      <input type="hidden" name="Subject" value="@Model.Subject" />
+                      <div class="form-group">
+                        <label for="question" class="label-font">Вопрос</label>
+                        <textarea id="question" name="question" class="form-control" type="text"
+                                  placeholder="Здесь появится вопрос" readonly style="height: 250px">@Model.Question
+                        </textarea>
+                      </div>
+                    </div>
+                    <div class="col-5 border-top border-bottom">
+                      <!-- <div class="row align-items-start"> -->
+                      <div class="form-group">
+                        <label for="answer label-font">Ваш ответ</label>
+                        <input type="text" name="answer" placeholder="Запишите ответ здесь"
+                               class="form-control @ViewBag.IsItRightAnswer" id="answer" value="@ViewBag.UserAnswer" />
+                      </div>
+                      <!-- </div> -->
+                      <!-- <div class="row align-items-end"> -->
+                      <div class="form-group">
+                        <label for="right_unswer" class="label-font">Правильный ответ</label>
+                        <textarea id="right_unswer" class="form-control" type="text"
+                                  placeholder="Здесь появится правильный ответ" height="220px"
+                                  readonly>@ViewBag.RightAnswer</textarea>
+                      </div>
+                      <!-- </div> -->
+                    </div>
+                  </div>
+                  <!--</form>-->
+                </div>
+              </div>
+            </div>
+            <div class="col-12 border-bottom">
+              <div class="row my-3 ">
+                <div class="col-6">
+                  <div class="row justify-content-center">
+                    <button class="btn btn_my @ViewBag.DisabledCheck" type="submit" name="action" value="checkAnswer" @ViewBag.DisabledCheck>Проверить</button>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="row justify-content-center">
+                    <button class="btn btn_my @ViewBag.DisabledNext" type="submit" name="action" value="nextQuestion" @ViewBag.DisabledNext>Следующий вопрос</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="row my-3">
+                <div class="col-4">
+                  <div class="row">
+                    <div class="col-12 text-center">Всего вопросов:</div>
+                  </div>
+                  <div class="row">
+                    <div class="col-12 text-center">@ViewBag.QuestionAnswerListCount</div>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="row">
+                    <div class="col-12 text-center">Осталось вопросов:</div>
+                  </div>
+                  <div class="row">
+                    <div class="col-12 text-center">@ViewBag.QuestionsLeft</div>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="row">
+                    <div class="col-12 text-center">Правильных ответов:</div>
+                  </div>
+                  <div class="row">
+                    <div class="col-12 text-center">Тоже пока хз</div>
+                  </div>
+                </div>
+                @*<div class="col-12 h-100 py-3">
+                    <div class="col-12 py-3 h-100 border rounded"></div>
+                  </div>*@
+              </div>
+            </div>
+          </div>
+          <div class="row border rounded">
+            <div class="col-12">
+              <div class="row">
+                <div class="btn btn_my btn-block">Добавить вопросы в БД</div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+  @Scripts.Render("~/bundles/jquery")
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  @Scripts.Render("~/bundles/bootstrap")
 </body>
 </html>

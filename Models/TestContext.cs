@@ -6,6 +6,6 @@ using System.Data.Entity;
 
 namespace FirstTryMVC5.Models {
   public class TestContext : DbContext {
-    public DbSet<QuestionAnswer> TestsList { get; set; }
+    public DbSet<QuestionAnswer> QuestionAnswers { get; set; }
   }
 }

@@ -11,7 +11,7 @@ using System.Data.Entity;
 namespace FirstTryMVC5 {
   public class MvcApplication : System.Web.HttpApplication {
     protected void Application_Start() {
-      Database.SetInitializer(new DBInitializer());
+      //Database.SetInitializer(new DBInitializer());
 
       AreaRegistration.RegisterAllAreas();
       FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);

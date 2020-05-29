@@ -11,5 +11,6 @@ namespace FirstTryMVC5.Models {
     public string Answer { get; set; }
     public int AskAmount { get; set; }
     public int RightAnsAmount { get; set; }
+    public int LeadUp { get; set; }
   }
 }
