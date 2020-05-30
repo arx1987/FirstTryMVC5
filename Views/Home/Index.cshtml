@@ -55,9 +55,10 @@
                       </button>
                       <div class="dropdown-menu dropdown_my" aria-labelledby="dropdownMenu2">
                         @foreach (var item in ViewBag.AllSubjects) {
-                          <button class="dropdown-item dropdown_item_my" type="submit" name="action" value="chooseSubject">@item</button>
+                          <button class="dropdown-item dropdown_item_my" onclick="setSubject(this)" type="submit" name="action" value="chooseSubject">@item</button>
                         }
                       </div>
+                      <input type="hidden" name="dropdownSubject" value="123"/>
                     </div>
                     @*-------------------------------*@
                   </div>
@@ -166,5 +167,6 @@
   @Scripts.Render("~/bundles/jquery")
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
   @Scripts.Render("~/bundles/bootstrap")
+  @Scripts.Render("~/Scripts/MyIndex.js")
 </body>
 </html>

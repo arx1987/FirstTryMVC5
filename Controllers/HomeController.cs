@@ -27,7 +27,8 @@ namespace FirstTryMVC5.Controllers {
 
     [HttpPost]
     [MultiButton(Name = "action", Argument = "chooseSubject")]
-    public ActionResult chooseSubject(string subject) {
+    public ActionResult chooseSubject(string dropdownSubject) {
+      string subject = dropdownSubject;
       ViewBag.Subject = subject;
       //извлекаем данные из таблицы TestList
       dbLines = testContext.QuestionAnswers;
