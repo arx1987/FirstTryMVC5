@@ -36,7 +36,7 @@ namespace FirstTryMVC5.Controllers {
       //получим из бд все темы
       ViewBag.AllSubjects = dbLines.Select(p => p.Subject).Distinct();
       //количество записей в таблице которое удовлетворяет условию
-      int count = dbLines.Select(p => p.Subject == subject).Count();
+      int count = dbLines.Where(p => p.Subject == subject).Count();
       ViewBag.QuestionAnswerListCount = count;//всего вопросов
       /*--------суть этого блочка вернуть рандомно строку из бд, которая соответствует теме-------*/
       Random rand = new Random();
@@ -87,11 +87,12 @@ namespace FirstTryMVC5.Controllers {
     [HttpPost]
     [MultiButton(Name = "action", Argument = "checkAnswer")]
     public ActionResult checkAnswer(QuestionAnswer model) {
-      /*логика*/
-      /*1)получаем данные с клиента: id строки из базы данных и Answer пользователя
-       2)по полученному Id, находим эту строку в бд
-       3) записываем в бд: AskAmount +1
-       4) вытаскиваем из бд Answer и сравниваем с Answer полученным с клиента
+      /*логика
+       получаем данные из формы, где вопрос-Question и тема - Subject соответствуют заданному пользователю вопросу из бд. Задача, получить именно эту строку вопроса из бд, сравнить ответ в бд с ответом пользователя и вывести результат
+       1) получаем данные
+       2) находим соответствующую строку в бд
+       3) берем оттуда правильный ответ
+       4) сравниваем его с ответом пользователя
        5) если answer пользователя совпадает с answer бд, то:
           - RightAnsAmount +1
           - ViewBag.IsItRightAnswer = "colorGreen";
@@ -101,11 +102,18 @@ namespace FirstTryMVC5.Controllers {
        
       //1)2)
       dbLines = testContext.QuestionAnswers;
+      //получим из бд все темы
+      ViewBag.AllSubjects = dbLines.Select(p => p.Subject).Distinct();
       QuestionAnswer line;
       if(model.Subject == null) {
+        //если тема не выбрана
+        ViewBag.Subject = "Выбрать тему";
         line = selectDBLine(dbLines, model.LeadUp);
       } else {
-        line = selectDBLine(model.LeadUp, model.Subject, dbLines);
+        //установим текущую тему в представлении, если она выбрана
+        ViewBag.Subject = model.Subject;
+        //line = selectDBLine(model.LeadUp, model.Subject, model.Question, dbLines);
+        line = selectDBLine(model.Id, dbLines);
       }
       //3) 
       if(line != null) {
@@ -128,7 +136,7 @@ namespace FirstTryMVC5.Controllers {
       }
      
       /*делаем кнопку chechAnswer не активной, чтобы лишний раз не отправлять запрос на сервер.. новой инфы ведь и так не получит*/
-      ViewBag.ViewBag.DisabledCheck = "disabled";
+      ViewBag.DisabledCheck = "disabled";
       return View(line);
     }
 
@@ -138,9 +146,15 @@ namespace FirstTryMVC5.Controllers {
       /*логика*/
       dbLines = testContext.QuestionAnswers;
       QuestionAnswer line;
+      //получим из бд все темы
+      ViewBag.AllSubjects = dbLines.Select(p => p.Subject).Distinct();
       if (model.Subject == null) {
+        //если тема не выбрана
+        ViewBag.Subject = "Выбрать тему";
         line = selectDBLine(dbLines, model.LeadUp);
       } else {
+        //установим текущую тему в представлении, если она выбрана
+        ViewBag.Subject = model.Subject;
         line = selectDBLine(model.LeadUp, model.Subject, dbLines);
       }
       if(line != null) {
@@ -151,7 +165,7 @@ namespace FirstTryMVC5.Controllers {
         line = emptyLine();
       }
       /*делаем кнопку chechAnswer активной*/
-      ViewBag.ViewBag.DisabledCheck = "";//не обязательная строка
+      ViewBag.DisabledCheck = "";//не обязательная строка
       return View(line);
     }
 
@@ -192,6 +206,22 @@ namespace FirstTryMVC5.Controllers {
         //            where u.Id == id
         //            select u;
         //return new QuestionAnswers();
+      /* если line = null, то тест закончен, нет больше доступных строк в базе, которые ты еще не прошел, а занчит, нужно предложить пройти этот тест сначала или начать другие тесты*/
+      if (line == null) {
+        line = emptyLine();
+      }
+      return line;
+    }
+    //для проверки правильного ответа(в параметрах передаются leadUp, тема, вопрос, ну и таблица), возвращает строку из бд
+    QuestionAnswer selectDBLine(int leadUp, string subject, string question, IEnumerable<QuestionAnswer> dbLines) {
+      QuestionAnswer line = dbLines.Where(u => u.Subject == subject).Where(u => u.LeadUp != leadUp).Where(u => u.Question == question).FirstOrDefault();
+      //line = dbLines.Where(u => u.Subject == subject).Where(u => u.Id == id).FirstOrDefault();
+      //var query1 = from u in dbLines
+      //            where u.LeadUp != leadUp
+      //            where u.Subject == subject
+      //            where u.Id == id
+      //            select u;
+      //return new QuestionAnswers();
       /* если line = null, то тест закончен, нет больше доступных строк в базе, которые ты еще не прошел, а занчит, нужно предложить пройти этот тест сначала или начать другие тесты*/
       if (line == null) {
         line = emptyLine();

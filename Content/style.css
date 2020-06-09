@@ -488,7 +488,7 @@ body {
 /*ViewBag.IsItRightAnswer = "colorGreen" or "colorRed"*/
 /*если ответ правильный*/
 .colorGreen {
-  color: green;
+  color: #10d410;
 }
 /*если ответ не правильный*/
 .colorRed {
