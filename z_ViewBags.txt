@@ -1,4 +1,19 @@
 ViewBag.IsItRightAnswer -> colorGreen or colorRed
+
 ViewBag.DisabledAllSubjects -> или ничего или disabled(для кнопки AllSubjects)
+
 ViewBag.DisabledCheck -> или ничего или disabled(для кнопки checkAnswer)
+
 ViewBag.DisabledNext -> или ничего или disabled(для кнопки nextQuestion)
+
+ViewBag.EnterButton -> значения либо testBut, либо checkAnswer, либо nextQuestion
+
+ViewBag.Autofocus = "autofocus" или = ""
+
+ViewBag.AllSubjectsOn -> 1 или 0. Если 1 - то нажата кнопка "Все темы"
+
+ViewBag.AllSubjects
+
+ViewBag.Subject
+ViewBag.Question
+ViewBag.Answer

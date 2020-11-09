@@ -11,18 +11,21 @@ namespace FirstTryMVC5.Controllers {
     TestContext testContext = new TestContext();
     string rightCurrentAnswer;
     IEnumerable<QuestionAnswer> dbLines;
+    //ViewBag.AllSubjectsOn -> 0 - если не выбрана какая-то тема и 1 - если нажата кнопка "Все темы"
 
     [HttpGet]
     public ActionResult Index() {
       ViewBag.Subject = "Выбрать тему";
       ViewBag.DisabledCheck = "disabled";
       ViewBag.DisabledNext = "disabled";
+      ViewBag.EnterButton = "testBut";
       //извлекаем данные из таблицы TestList
       dbLines = testContext.QuestionAnswers;
       //ViewBag - динамический объект
       //получим из бд все темы
       ViewBag.AllSubjects = dbLines.Select(p => p.Subject).Distinct(); //new string[] { "1ая тема", "2ая тема", "3ья тема" };
-      return View(new QuestionAnswer());
+      return View(new QuestionAnswer() { Question = "Выберите тему для повторения" });//этот вариант работает если во View: @model FirstTryMVC5.Models.QuestionAnswer 
+      //return View(testContext.QuestionAnswers);/*этот вариант(вариант из видео) работает если во View писать модель как @model IEnumerable<FirstTryMVC5.Models.QuestionAnswer>*/
     }
 
     [HttpPost]
@@ -30,6 +33,7 @@ namespace FirstTryMVC5.Controllers {
     public ActionResult chooseSubject(string dropdownSubject) {
       string subject = dropdownSubject;
       ViewBag.Subject = subject;
+      ViewBag.AllSubjectsOn = "0";
       //извлекаем данные из таблицы TestList
       dbLines = testContext.QuestionAnswers;
       //ViewBag - динамический объект
@@ -50,6 +54,8 @@ namespace FirstTryMVC5.Controllers {
       ViewBag.QuestionsLeft = count-1;
       /*----------------*/
       dbLine.LeadUp = leadUp;
+      ViewBag.Autofocus = "autofocus";
+      ViewBag.EnterButton = "checkAnswer";
       testContext.SaveChanges();
       //rightCurrentAnswer = myList[index].Answer;
       //ViewBag.QuestionAnswers = dbline;
@@ -61,9 +67,11 @@ namespace FirstTryMVC5.Controllers {
 
     [HttpPost]
     [MultiButton(Name = "action", Argument = "allSubjects")]
-    public ActionResult allSubjects() {
+    public ActionResult allSubjects(QuestionAnswer model) {
       ViewBag.Subject = "Выбрать тему";
       ViewBag.Disabled = "disabled";
+      ViewBag.AllSubjectsOn = "1";
+      model.Subject = null;
       //извлекаем данные из таблицы TestList
       dbLines = testContext.QuestionAnswers;
       //получим из бд все темы
@@ -79,6 +87,8 @@ namespace FirstTryMVC5.Controllers {
       //string leadUpStr = leadUp.ToString();
       QuestionAnswer dbLine = dbLines.Skip(index - 1).Take(1).FirstOrDefault();
       //QuestionAnswer dbLine = dbLines.Where(p => p.Id == index).FirstOrDefault();
+      ViewBag.Autofocus = "autofocus";
+      ViewBag.EnterButton = "checkAnswer";
       dbLine.LeadUp = leadUp;
       testContext.SaveChanges();
       return View(dbLine);
@@ -86,7 +96,7 @@ namespace FirstTryMVC5.Controllers {
 
     [HttpPost]
     [MultiButton(Name = "action", Argument = "checkAnswer")]
-    public ActionResult checkAnswer(QuestionAnswer model) {
+    public ActionResult checkAnswer(QuestionAnswer model, string allSubjectsOn) {
       /*логика
        получаем данные из формы, где вопрос-Question и тема - Subject соответствуют заданному пользователю вопросу из бд. Задача, получить именно эту строку вопроса из бд, сравнить ответ в бд с ответом пользователя и вывести результат
        1) получаем данные
@@ -102,21 +112,22 @@ namespace FirstTryMVC5.Controllers {
        
       //1)2)
       dbLines = testContext.QuestionAnswers;
+      ViewBag.AllSubjectsOn = allSubjectsOn;
       //получим из бд все темы
       ViewBag.AllSubjects = dbLines.Select(p => p.Subject).Distinct();
       QuestionAnswer line;
-      if(model.Subject == null) {
+      if(allSubjectsOn == "1") {
         //если тема не выбрана
         ViewBag.Subject = "Выбрать тему";
-        line = selectDBLine(dbLines, model.LeadUp);
+        //line = selectDBLine(dbLines, model.LeadUp);
       } else {
         //установим текущую тему в представлении, если она выбрана
         ViewBag.Subject = model.Subject;
         //line = selectDBLine(model.LeadUp, model.Subject, model.Question, dbLines);
-        line = selectDBLine(model.Id, dbLines);
       }
       //3) 
-      if(line != null) {
+      line = selectDBLine(model.Id, dbLines);
+      if (line != null) {
         line.AskAmount++;
         if (model.Answer == line.Answer) {
           ViewBag.IsItRightAnswer = "colorGreen";
@@ -134,21 +145,26 @@ namespace FirstTryMVC5.Controllers {
       } else {
         ViewBag.RightAnswer = "ошибка в программе, строка не найдена в бд";
       }
-     
+
       /*делаем кнопку chechAnswer не активной, чтобы лишний раз не отправлять запрос на сервер.. новой инфы ведь и так не получит*/
       ViewBag.DisabledCheck = "disabled";
+      ViewBag.Autofocus = "autofocus";
+      ViewBag.EnterButton = "nextQuestion";
       return View(line);
     }
 
     [HttpPost]
     [MultiButton(Name = "action", Argument = "nextQuestion")]
-    public ActionResult nextQuestion(QuestionAnswer model) {
+    public ActionResult nextQuestion(QuestionAnswer model, string allSubjectsOn) {
       /*логика*/
+      ViewBag.AllSubjectsOn = allSubjectsOn;
       dbLines = testContext.QuestionAnswers;
       QuestionAnswer line;
       //получим из бд все темы
       ViewBag.AllSubjects = dbLines.Select(p => p.Subject).Distinct();
-      if (model.Subject == null) {
+      /*В зависимости от того выбрана одна тема или все темы, нужны разные запросы к бд. Чтобы показать следующий вопрос*/
+      //if (model.Subject == null) {
+      if(allSubjectsOn == "1") { 
         //если тема не выбрана
         ViewBag.Subject = "Выбрать тему";
         line = selectDBLine(dbLines, model.LeadUp);
@@ -157,15 +173,40 @@ namespace FirstTryMVC5.Controllers {
         ViewBag.Subject = model.Subject;
         line = selectDBLine(model.LeadUp, model.Subject, dbLines);
       }
-      if(line != null) {
+      if(line.Id != -1) {
         line.AskAmount++;
         line.LeadUp = model.LeadUp;
         testContext.SaveChanges();
       } else {
-        line = emptyLine();
+        //нужно проверить почему пустая строка, потому что запрос не верен или потому, что закончились строки
+        //если строки закончились - сообщим об этом в окошке Question
+        return View(new QuestionAnswer() {
+          Id = -1,
+          Subject = "not found",
+          Question = "Вы прошли все вопросы этой темы",
+          Answer = "not found",
+          AskAmount = 0,
+          RightAnsAmount = 0,
+          LeadUp = -1
+        });
       }
-      /*делаем кнопку chechAnswer активной*/
+
+      ViewBag.Autofocus = "autofocus";
+      ViewBag.EnterButton = "checkAnswer";
+
+      /*делаем кнопку checkAnswer активной*/
       ViewBag.DisabledCheck = "";//не обязательная строка
+      return View(line);
+    }
+
+    [HttpPost]
+    [MultiButton(Name = "action", Argument = "testBut")]
+    public ActionResult testBut(QuestionAnswer model, string allSubjectsOn) {
+      ViewBag.AllSubjectsOn = allSubjectsOn;
+      dbLines = testContext.QuestionAnswers;
+      ViewBag.Subject = model.Subject;
+      QuestionAnswer line = selectDBLine(model.LeadUp, model.Subject, dbLines);
+      ViewBag.EnterButton = "testBut";
       return View(line);
     }
 
@@ -190,7 +231,7 @@ namespace FirstTryMVC5.Controllers {
     }
     //когда выбраны все темы, нужно выбрать строку из всей таблицы
     QuestionAnswer selectDBLine(IEnumerable<QuestionAnswer> dbLines, int leadUp) {
-      QuestionAnswer line = dbLines.Where(u => u.LeadUp != leadUp).OrderBy(u => u.RightAnsAmount).ThenBy(u => u.AskAmount).First();
+      QuestionAnswer line = dbLines.Where(u => u.LeadUp != leadUp).OrderBy(u => u.RightAnsAmount).ThenBy(u => u.AskAmount).FirstOrDefault();
       if(line == null) {
         line = emptyLine();
       }
@@ -215,14 +256,7 @@ namespace FirstTryMVC5.Controllers {
     //для проверки правильного ответа(в параметрах передаются leadUp, тема, вопрос, ну и таблица), возвращает строку из бд
     QuestionAnswer selectDBLine(int leadUp, string subject, string question, IEnumerable<QuestionAnswer> dbLines) {
       QuestionAnswer line = dbLines.Where(u => u.Subject == subject).Where(u => u.LeadUp != leadUp).Where(u => u.Question == question).FirstOrDefault();
-      //line = dbLines.Where(u => u.Subject == subject).Where(u => u.Id == id).FirstOrDefault();
-      //var query1 = from u in dbLines
-      //            where u.LeadUp != leadUp
-      //            where u.Subject == subject
-      //            where u.Id == id
-      //            select u;
-      //return new QuestionAnswers();
-      /* если line = null, то тест закончен, нет больше доступных строк в базе, которые ты еще не прошел, а занчит, нужно предложить пройти этот тест сначала или начать другие тесты*/
+
       if (line == null) {
         line = emptyLine();
       }
@@ -235,10 +269,48 @@ namespace FirstTryMVC5.Controllers {
     }
 
 
-    /*end of Home page*/
+    /*-------------------------------------end of Home page-------------------------------------------------*/
+
+    public ActionResult AddToDb() {
+      ViewBag.Subject = "Выберите тему";
+      //извлекаем данные из таблицы TestList
+      dbLines = testContext.QuestionAnswers;
+      //ViewBag - динамический объект
+      //получим из бд все темы
+      ViewBag.AllSubjects = dbLines.Select(p => p.Subject).Distinct(); //new string[] { "1ая тема", "2ая тема", "3ья тема" };
+      return View();
+    }
+
+    [HttpPost]
+    [MultiButton(Name = "action", Argument = "chooseSubject2")]
+    public ActionResult chooseSubject2(string dropdownSubject, string Question, string Answer) {
+      //добавлены параметры Question, Answer -> если забыли указать тему, но заполнили поля формы - чтобы поля не исчезали, при выборе темы
+      ViewBag.Subject = dropdownSubject;
+      ViewBag.Question = Question;
+      ViewBag.Answer = Answer;
+      //извлекаем данные из таблицы TestList
+      dbLines = testContext.QuestionAnswers;
+      //получим из бд все темы
+      ViewBag.AllSubjects = dbLines.Select(p => p.Subject).Distinct();
+      return View();
+    }
 
 
-    public ActionResult About() {
+    [HttpPost]
+    [MultiButton(Name = "action", Argument = "addDataToDB")]
+    public ActionResult addDataToDB(QuestionAnswer questionAnswer, string dropdownSubject) {
+      dbLines = testContext.QuestionAnswers;
+      testContext.QuestionAnswers.Add(questionAnswer);
+      testContext.SaveChanges();
+      //получим из бд все темы
+      ViewBag.AllSubjects = dbLines.Select(p => p.Subject).Distinct();
+      ViewBag.Subject = "Выберите тему";
+      ViewBag.SendingResult = "Данные были добавлены в базу";
+      ViewBag.IsItRightAnswer = "colorGreen";
+      return View();
+    }
+
+      public ActionResult About() {
       ViewBag.Message = "Your application description page.";
 
       return View();

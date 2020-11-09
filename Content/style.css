@@ -108,9 +108,29 @@ body {
   border-color: #6c757d;
 }
 
-  .btn_my_inactive.disbled {
+.btn_my_inactive.disbled {
     opacity: 0;
-  }
+}
+
+#question {
+  height: 250px;
+}
+
+#toBdQuestion {
+  height: 165px;
+}
+
+#right_unswer {
+  height: 165px;
+}
+
+#toBdAnswer {
+  height: 50px;
+}
+
+#question, #answer, #right_unswer, #toBdAnswer, #toBdQuestion, #DbNewSubject {
+  background: #c3ffdd;
+}
 
 .a_block { /*background-color: #f9fbfd;*/
   padding-left: 0 !important;
@@ -122,6 +142,10 @@ body {
 
   .a_1row .a_logo .img-fluid {
     height: 100%;
+  }
+
+  #toMain > a {
+    color: white;
   }
 /*меню*/
 .a_menu .navbar-light .navbar-nav .nav-link {
@@ -488,11 +512,11 @@ body {
 /*ViewBag.IsItRightAnswer = "colorGreen" or "colorRed"*/
 /*если ответ правильный*/
 .colorGreen {
-  color: #10d410;
+  color: #10d410!important;
 }
 /*если ответ не правильный*/
 .colorRed {
-  color: red;
+  color: red!important;
 }
 
 /*ViewBag.Disable = "" or "disabled"*/
