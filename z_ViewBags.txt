@@ -12,6 +12,10 @@ ViewBag.Autofocus = "autofocus" или = ""
 
 ViewBag.AllSubjectsOn -> 1 или 0. Если 1 - то нажата кнопка "Все темы"
 
+ViewBag.QuestionAnswerListCount - Всего вопросов в бд
+ViewBag.QuestionsLeft	- Осталось вопросов
+ViewBag.RightAnswersCount - Правильных ответов в текущем тесте
+
 ViewBag.AllSubjects
 
 ViewBag.Subject

@@ -45,21 +45,21 @@
               </div>
               <div class="row" id="add_input" style="display:none">
                 <div class="form-group col">
-                  <label for="tpBdAnswer label-font">Введите название темы</label>
+                  <label for="tpBdAnswer">Введите название темы</label>
                   <input type="text" name="Subject" placeholder="Введите название темы"
                          class="form-control" id="DbNewSubject" autocomplete="off" />
                 </div>
               </div>
               <div class="row">
                 <div class="form-group col">
-                  <label for="toBdQuestion" class="label-font">Вопрос</label>
+                  <label for="toBdQuestion">Вопрос</label>
                   <textarea id="toBdQuestion" name="Question" class="form-control" type="text"
                             placeholder="Текст вопроса">@ViewBag.Question</textarea>
                 </div>
               </div>
               <div class="row">
                 <div class="form-group col">
-                  <label for="tpBdAnswer label-font">Правильный ответ</label>
+                  <label for="tpBdAnswer">Правильный ответ</label>
                   <input type="text" name="Answer" placeholder="Запишите текст правильного ответа здесь"
                          class="form-control" id="toBdAnswer" value="@ViewBag.Answer" autocomplete="off" />
                   <input type="hidden" name="AskAmount" value="0" />

@@ -9,7 +9,6 @@ using FirstTryMVC5.Models;
 namespace FirstTryMVC5.Controllers {
   public class HomeController : Controller {
     TestContext testContext = new TestContext();
-    string rightCurrentAnswer;
     IEnumerable<QuestionAnswer> dbLines;
     //ViewBag.AllSubjectsOn -> 0 - если не выбрана какая-то тема и 1 - если нажата кнопка "Все темы"
 
@@ -52,6 +51,7 @@ namespace FirstTryMVC5.Controllers {
       QuestionAnswer dbLine = dbLines.Where(p => p.Subject == subject).Skip(index-1).Take(1).FirstOrDefault();
       //QuestionAnswer dbLine = dbLines.Where(p => p.Id == index).FirstOrDefault();
       ViewBag.QuestionsLeft = count-1;
+      ViewBag.RightAnswersCount = 0;
       /*----------------*/
       dbLine.LeadUp = leadUp;
       ViewBag.Autofocus = "autofocus";
@@ -79,6 +79,8 @@ namespace FirstTryMVC5.Controllers {
       //количество записей в таблице
       int count = dbLines.Count();
       ViewBag.QuestionAnswerListCount = count;
+      ViewBag.QuestionsLeft = count - 1;
+      ViewBag.RightAnswersCount = 0;
       Random rand = new Random();
       int index = rand.Next(1, count);
       //установим LeadUp для этого подхода
@@ -96,7 +98,7 @@ namespace FirstTryMVC5.Controllers {
 
     [HttpPost]
     [MultiButton(Name = "action", Argument = "checkAnswer")]
-    public ActionResult checkAnswer(QuestionAnswer model, string allSubjectsOn) {
+    public ActionResult checkAnswer(QuestionAnswer model, string allSubjectsOn, string questionAnswerListCount, string questionsLeft, string rightAnswersCount) {
       /*логика
        получаем данные из формы, где вопрос-Question и тема - Subject соответствуют заданному пользователю вопросу из бд. Задача, получить именно эту строку вопроса из бд, сравнить ответ в бд с ответом пользователя и вывести результат
        1) получаем данные
@@ -109,8 +111,10 @@ namespace FirstTryMVC5.Controllers {
        если answer пользователя не совпадает с answer бд,то:
           - ViewBag.IsItRightAnswer = "colorRed";
        6)сохраняем изменения в бд и выводим view*/
-       
+
       //1)2)
+      //переведем параметр правильных ответов в число
+      int rAnsCnt = Convert.ToInt32(rightAnswersCount);
       dbLines = testContext.QuestionAnswers;
       ViewBag.AllSubjectsOn = allSubjectsOn;
       //получим из бд все темы
@@ -131,6 +135,7 @@ namespace FirstTryMVC5.Controllers {
         line.AskAmount++;
         if (model.Answer == line.Answer) {
           ViewBag.IsItRightAnswer = "colorGreen";
+          rAnsCnt++;
           line.RightAnsAmount++;
         }
         else {
@@ -145,7 +150,10 @@ namespace FirstTryMVC5.Controllers {
       } else {
         ViewBag.RightAnswer = "ошибка в программе, строка не найдена в бд";
       }
-
+      /*задаем значения количеств вопросов и ответов*/
+      ViewBag.QuestionAnswerListCount = questionAnswerListCount;
+      ViewBag.QuestionsLeft = questionsLeft;
+      ViewBag.RightAnswersCount = rAnsCnt;
       /*делаем кнопку chechAnswer не активной, чтобы лишний раз не отправлять запрос на сервер.. новой инфы ведь и так не получит*/
       ViewBag.DisabledCheck = "disabled";
       ViewBag.Autofocus = "autofocus";
@@ -155,8 +163,11 @@ namespace FirstTryMVC5.Controllers {
 
     [HttpPost]
     [MultiButton(Name = "action", Argument = "nextQuestion")]
-    public ActionResult nextQuestion(QuestionAnswer model, string allSubjectsOn) {
+    public ActionResult nextQuestion(QuestionAnswer model, string allSubjectsOn, string questionAnswerListCount, string questionsLeft, string rightAnswersCount) {
       /*логика*/
+      //переводим количество оставшихся вопросов в инт и отнимаем один
+      int qLft = Convert.ToInt32(questionsLeft);
+      qLft--;
       ViewBag.AllSubjectsOn = allSubjectsOn;
       dbLines = testContext.QuestionAnswers;
       QuestionAnswer line;
@@ -165,7 +176,7 @@ namespace FirstTryMVC5.Controllers {
       /*В зависимости от того выбрана одна тема или все темы, нужны разные запросы к бд. Чтобы показать следующий вопрос*/
       //if (model.Subject == null) {
       if(allSubjectsOn == "1") { 
-        //если тема не выбрана
+        //если тема не выбрана - т.е. выбраны все темы
         ViewBag.Subject = "Выбрать тему";
         line = selectDBLine(dbLines, model.LeadUp);
       } else {
@@ -177,13 +188,25 @@ namespace FirstTryMVC5.Controllers {
         line.AskAmount++;
         line.LeadUp = model.LeadUp;
         testContext.SaveChanges();
+        ViewBag.QuestionAnswerListCount = questionAnswerListCount;
+        ViewBag.QuestionsLeft = qLft;
+        ViewBag.RightAnswersCount = rightAnswersCount;
       } else {
         //нужно проверить почему пустая строка, потому что запрос не верен или потому, что закончились строки
         //если строки закончились - сообщим об этом в окошке Question
+        ViewBag.QuestionAnswerListCount = questionAnswerListCount;
+        ViewBag.QuestionsLeft = questionAnswerListCount;
+        ViewBag.RightAnswersCount = 0;
+        //делаем кнопки checkAnswer и nextQuestion не активными
+        ViewBag.DisabledCheck = "disabled";
+        ViewBag.DisabledNext = "disabled";
         return View(new QuestionAnswer() {
           Id = -1,
           Subject = "not found",
-          Question = "Вы прошли все вопросы этой темы",
+          Question = "Вы прошли все вопросы этой темы. " +
+          "\nВсего вопросов: " + questionAnswerListCount + 
+          "\nПравильных ответов: " + rightAnswersCount + 
+          "\nВыберите следующую тему",
           Answer = "not found",
           AskAmount = 0,
           RightAnsAmount = 0,
