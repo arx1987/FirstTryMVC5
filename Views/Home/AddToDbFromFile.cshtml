@@ -1,0 +1,72 @@
+﻿@{
+  ViewBag.Title = "AddToDbFromFile";
+}
+<div class="container-fluid a_block">
+  <div class="row align-items-center no-gutters">
+
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col p-3 h4" id="toMain"><a href="/Home/Index">На главную</a></div>
+        <div class="col p-2 h3">Добавить в БД данные из файла</div>
+      </div>
+    </div>
+    <div class="container">
+      @using (Html.BeginForm("AddToDbFromFile", "Home", FormMethod.Post, new { enctype = "multipart/form-data" })) {
+        <div class="fl_upld row">
+          <label class="btn btn-block btn_my" id="upload_label"><input id="fl_inp" type="file" name="upload" /><span id="label_text">Выберите файл</span></label>
+          @*<div id="fl_nm" class="btn btn_my">Файл не выбран</div>*@
+          <input type="submit" value="Загрузить" class="btn btn-block btn_my" />
+        </div>
+      }
+      @*<h2>Drag & Drop file upload </h2>
+        <div id="dropArea">
+          Drop your files here
+        </div>
+        <h4>Uploaded files : </h4>
+        <ul class="list-group" id="uploadList">
+        </ul>*@
+
+    </div>
+  </div>
+</div>
+@section Scripts{
+  <script>
+    $(document).ready(function () {
+      $("#fl_inp").change(function () {
+        //$(this).val() -> "С:\fakepath\need to know.txt"
+        var filename = $(this).val().replace(/.*\\/, "");//need to know.txt
+        //$("#upload_label").html(filename);//заменяет содержимое всего лейбла и, к сожалению, удаляет инпут с добавленным туда файлом
+        $("#label_text").html(filename);
+      });
+    });
+  </script>
+}
+
+@*<script src="~/Scripts/jquery.filedrop.js"></script>*@
+@*<script type="text/javascript">
+          $(function () {
+              $('#dropArea').filedrop({
+                  url: '@Url.Action("AddToDbFromFile")',
+                  //allowedfiletypes: ['text/plain'],
+                  allowedfileextensions: ['.txt'],
+                  paramname: 'files',
+                  maxfiles: 4,
+                  maxfilesize: 4, // in MB
+                  dragOver: function () {
+                      $('#dropArea').addClass('active-drop');
+                  },
+                  dragLeave: function () {
+                      $('#dropArea').removeClass('active-drop');
+                  },
+                  drop: function () {
+                      $('#dropArea').removeClass('active-drop');
+                  },
+                  afterAll: function (e) {
+                      $('#dropArea').html('file(s) uploaded successfully');
+                  },
+                  uploadFinished: function (i, file, response, time) {
+                      $('#uploadList').append('<li class="list-group-item">'+file.name+'</li>')
+                  }
+              })
+          })
+  </script>*@

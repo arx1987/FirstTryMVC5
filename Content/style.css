@@ -367,6 +367,37 @@ body {
   }
 /*конец поиска*/
 
+/*добавление в БД данных из файла - начало*/
+
+#fl_inp {
+  display: none;
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+
+    /*drag n drop начало*/
+#dropArea {
+  background: #b5b5b5;
+  border: black dashed 1px;
+  height: 50px;
+  text-align: center;
+  color: #fff;
+  padding-top: 12px;
+}
+
+.active-drop {
+  background: #77bafa !important;
+  border: solid 2px blue !important;
+  opacity: .5;
+  color: black !important;
+}
+    /*drag n drop конец*/
+/*добавление в БД данных из файла - конец*/
+
 .a_text {
   margin-bottom: 0px;
 }

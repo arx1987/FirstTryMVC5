@@ -1,91 +1,71 @@
 ﻿@{
-  Layout = null;//для представления не используется мастер страница
+  ViewBag.Title = "AddToDb";
 }
+<div class="container-fluid a_block">
+  <div class="row align-items-center no-gutters">
 
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Добавление вопросов в бд</title>
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700,800,900&amp;subset=cyrillic" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700&amp;subset=cyrillic-ext" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css?family=PT+Sans" rel="stylesheet">
-  <link rel="shortcut icon" href="~/Content/images/favicon.ico" type="image/x-icon">
-  @Styles.Render("~/Content/css")
-  @Scripts.Render("~/bundles/modernizr")
-</head>
-<body>
-  <div class="container-fluid a_block">
-    <div class="row align-items-center no-gutters">
-
-      <div class="container">
-        <div class="row justify-content-center">
-          <div class="col p-3 h4" id="toMain"><a href="/Home/Index">На главную</a></div>
-          <div class="col p-2 h3">Добавить в БД</div>
-        </div>
-      </div>
-      <div class="container">
-        @*@using (Html.BeginForm("Index", "Home", FormMethod.Post, new { runat="server", DefaultButton="ChckBttn" })) {*@
-        @using (Html.BeginForm("AddToDb", "Home", FormMethod.Post)) {
-          <div class="row pt-3 border rounded">
-            <div class="col-12">
-              <div class="row">
-                <div class="dropdown  btn-block mx-3">
-                  <button class="btn btn-block btn_my dropdown-toggle" type="submit" id="dropdownMenu3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@ViewBag.Subject</button>
-                  <div class="dropdown-menu dropdown_my" id="dropDownMenuDB" aria-labelledby="dropdownMenu3" col>
-                    <button type="button" class="dropdown-item dropdown_item_my" id="new_subject">Новая тема</button>
-                    @foreach (var item in ViewBag.AllSubjects) {
-                      <button class="dropdown-item dropdown_item_my" onclick="setSubject(this)" type="submit" name="action" value="chooseSubject2">@item</button>
-                    }
-                  </div>
-                  <input type="hidden" name="dropdownSubject" value="123" />
-                </div>
-              </div>
-              <div class="row" id="add_input" style="display:none">
-                <div class="form-group col">
-                  <label for="tpBdAnswer">Введите название темы</label>
-                  <input type="text" name="Subject" placeholder="Введите название темы"
-                         class="form-control" id="DbNewSubject" autocomplete="off" />
-                </div>
-              </div>
-              <div class="row">
-                <div class="form-group col">
-                  <label for="toBdQuestion">Вопрос</label>
-                  <textarea id="toBdQuestion" name="Question" class="form-control" type="text"
-                            placeholder="Текст вопроса">@ViewBag.Question</textarea>
-                </div>
-              </div>
-              <div class="row">
-                <div class="form-group col">
-                  <label for="tpBdAnswer">Правильный ответ</label>
-                  <input type="text" name="Answer" placeholder="Запишите текст правильного ответа здесь"
-                         class="form-control" id="toBdAnswer" value="@ViewBag.Answer" autocomplete="off" />
-                  <input type="hidden" name="AskAmount" value="0" />
-                  <input type="hidden" name="RightAnsAmount" value="0" />
-                  <input type="hidden" name="LeadUp" value="0" />
-                </div>
-              </div>
-              <div class="row">
-                <div class="col">здесь будет кнопка добавления файла</div>
-              </div>
-              <div class="row">
-                <div class="col @ViewBag.IsItRightAnswer" id="sendingResult">@ViewBag.SendingResult</div>
-              </div>
-              <div class="row">
-                <button class="btn btn-block btn_my mx-3 mb-3" id="addToDB" type="submit" name="action" value="addDataToDB">Добавить в базу</button>
-              </div>
-            </div>
-          </div>
-        }
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col p-3 h4" id="toMain"><a href="/Home/Index">На главную</a></div>
+        <div class="col p-2 h3">Добавить в БД</div>
       </div>
     </div>
+    <div class="container">
+      @*@using (Html.BeginForm("Index", "Home", FormMethod.Post, new { runat="server", DefaultButton="ChckBttn" })) {*@
+      @using (Html.BeginForm("AddToDb", "Home", FormMethod.Post)) {
+        <div class="row pt-3 border rounded">
+          <div class="col-12">
+            <div class="row">
+              <div class="dropdown  btn-block mx-3">
+                <button class="btn btn-block btn_my dropdown-toggle" type="submit" id="dropdownMenu3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">@ViewBag.Subject</button>
+                <div class="dropdown-menu dropdown_my" id="dropDownMenuDB" aria-labelledby="dropdownMenu3" col>
+                  <button type="button" class="dropdown-item dropdown_item_my" id="new_subject">Новая тема</button>
+                  @foreach (var item in ViewBag.AllSubjects) {
+                    <button class="dropdown-item dropdown_item_my" onclick="setSubject(this)" type="submit" name="action" value="chooseSubject2">@item</button>
+                  }
+                </div>
+                <input type="hidden" name="dropdownSubject" value="123" />
+              </div>
+            </div>
+            <div class="row" id="add_input" style="display:none">
+              <div class="form-group col">
+                <label for="tpBdAnswer">Введите название темы</label>
+                <input type="text" name="Subject" placeholder="Введите название темы"
+                       class="form-control" id="DbNewSubject" autocomplete="off" />
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group col">
+                <label for="toBdQuestion">Вопрос</label>
+                <textarea id="toBdQuestion" name="Question" class="form-control" type="text"
+                          placeholder="Текст вопроса">@ViewBag.Question</textarea>
+              </div>
+            </div>
+            <div class="row">
+              <div class="form-group col">
+                <label for="tpBdAnswer">Правильный ответ</label>
+                <input type="text" name="Answer" placeholder="Запишите текст правильного ответа здесь"
+                       class="form-control" id="toBdAnswer" value="@ViewBag.Answer" autocomplete="off" />
+                <input type="hidden" name="AskAmount" value="0" />
+                <input type="hidden" name="RightAnsAmount" value="0" />
+                <input type="hidden" name="LeadUp" value="0" />
+              </div>
+            </div>
+            <div class="row">
+              <div class="col @ViewBag.IsItRightAnswer" id="sendingResult">@ViewBag.SendingResult</div>
+            </div>
+            <div class="row">
+              <button class="btn btn-block btn_my mx-3 mb-3" id="addToDB" type="submit" name="action" value="addDataToDB">Добавить в базу</button>
+            </div>
+            <div class="row">
+              <div class="btn btn-block btn_my mx-3 mb-3" id="AddToDbFromFile" onclick="location.href='/Home/AddToDbFromFile'">Добавить данные в БД файлом</div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
   </div>
-  @Scripts.Render("~/bundles/jquery")
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-  @Scripts.Render("~/bundles/bootstrap")
-  @Scripts.Render("~/Scripts/MyScripts/MyIndex.js")
-  @Scripts.Render("~/Scripts/MyScripts/MyAddToDB.js")
-</body>
-</html>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+@Scripts.Render("~/Scripts/MyScripts/MyIndex.js")
+@Scripts.Render("~/Scripts/MyScripts/MyAddToDB.js")

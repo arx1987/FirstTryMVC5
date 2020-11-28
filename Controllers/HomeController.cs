@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Web;
@@ -332,10 +333,55 @@ namespace FirstTryMVC5.Controllers {
       ViewBag.IsItRightAnswer = "colorGreen";
       return View();
     }
+    /*------------------------------end of AddToDb ------------------------------------------------------*/
 
-      public ActionResult About() {
-      ViewBag.Message = "Your application description page.";
+    [HttpGet]
+    public ActionResult AddToDbFromFile() {
+      return View();
+    }
 
+    [HttpPost]
+    /*public ActionResult AddToDbFromFile(IEnumerable<HttpPostedFileBase> files) {
+    foreach (var file in files) {
+        string filePath = Guid.NewGuid() + Path.GetExtension(file.FileName);
+    file.SaveAs(Path.Combine(Server.MapPath("~/Content/UploadedFiles"), filePath));
+        //Here you can write code for save this information in your database if you want
+      }
+      return Content("Success");
+     } 
+     */
+  public ActionResult AddToDbFromFile(HttpPostedFileBase upload) {
+      if(upload != null) { 
+        //полчаем имя файла
+        string fileName = System.IO.Path.GetFileName(upload.FileName);
+        //сохраняем файл в папку Content/UploadedFiles
+        upload.SaveAs(Server.MapPath("~/Content/UploadedFiles/" + fileName));
+        //string path1 = "~/Content/UploadedFiles/" + fileName;
+        string path = Server.MapPath(Url.Content("~/Content/UploadedFiles/" + fileName));
+        //считаем построчно файл:
+        using (StreamReader sr = new StreamReader(path, System.Text.Encoding.UTF8)) {
+          string line = null;
+          string currentSubject = null;
+          while((line = sr.ReadLine()) != null) {
+            if (line.StartsWith("#")) {//отбрем темы
+              currentSubject = line.Substring(1);
+            } else if(currentSubject != "" && currentSubject != null) {
+              string[] questionAnswer = line.Split(new char[] { '~' });
+              testContext.QuestionAnswers.Add(new QuestionAnswer {
+                Subject = currentSubject,
+                Question = questionAnswer[0],
+                Answer = questionAnswer[1],
+                AskAmount = 0,
+                RightAnsAmount = 0,
+                LeadUp = 0
+              });
+            }
+          }
+          testContext.SaveChanges();
+        }
+        //нужно удалить файл, который сохранился в Uploads
+        System.IO.File.Delete(path);
+      }
       return View();
     }
 
