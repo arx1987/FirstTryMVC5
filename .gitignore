@@ -340,4 +340,4 @@ ASALocalRun/
 healthchecksdb
 
 #It's mine files to ignore
-z_description.txt
+*.txt
