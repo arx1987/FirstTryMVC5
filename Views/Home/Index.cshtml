@@ -73,9 +73,7 @@
                     <input type="hidden" name="rightAnswersCount" value="@ViewBag.RightAnswersCount" />
                     <div class="form-group">
                       <label for="question">Вопрос</label>
-                      <textarea id="question" name="question" class="form-control" type="text"
-                                placeholder="Здесь появится вопрос" readonly">@Model.Question
-                          </textarea>
+                      <textarea id="question" name="question" class="form-control" type="text" placeholder="Здесь появится вопрос" readonly>@Model.Question</textarea>
                     </div>
                     @*break;
                       }*@
@@ -85,7 +83,7 @@
                     <div class="form-group">
                       <label for="answer">Ваш ответ</label>
                       <input type="text" name="answer" placeholder="Запишите ответ здесь"
-                             class="form-control @ViewBag.IsItRightAnswer" id="answer" value="@ViewBag.UserAnswer" autocomplete="off" onkeypress="pressedEnter(event)" @ViewBag.Autofocus />
+                             class="form-control @ViewBag.IsItRightAnswer" id="answer" value="@ViewBag.UserAnswer" autocomplete="off" readonly onkeypress="pressedEnter(event)" @ViewBag.Autofocus />
                     </div>
                     <!-- </div> -->
                     <!-- <div class="row align-items-end"> -->
