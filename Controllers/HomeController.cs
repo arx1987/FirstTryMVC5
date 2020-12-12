@@ -12,6 +12,9 @@ namespace FirstTryMVC5.Controllers {
     TestContext testContext = new TestContext();
     IEnumerable<QuestionAnswer> dbLines;
     //ViewBag.AllSubjectsOn -> 0 - если не выбрана какая-то тема и 1 - если нажата кнопка "Все темы"
+    //чтобы выбрать какюу-то определенную таблику можно написать
+    //var dbMVCLines = testContext.MVCQuestionAnswers;
+    //или IEnumerable<QuestionAnswer> dbLines = testContext.QuestionAnswers;
 
     [HttpGet]
     public ActionResult Index() {
@@ -134,7 +137,14 @@ namespace FirstTryMVC5.Controllers {
       line = selectDBLine(model.Id, dbLines);
       if (line != null) {
         line.AskAmount++;
-        if (model.Answer == line.Answer) {
+        string usrAnsTrimToLower = model.Answer.ToLower().Trim();
+        bool isRightAnswer = false;
+        string[] rightAnswers = line.Answer.Split('~');
+        foreach(string s in rightAnswers) {
+          if (usrAnsTrimToLower == s.ToLower().Trim())
+            isRightAnswer = true;
+        }
+        if (isRightAnswer) {
           ViewBag.IsItRightAnswer = "colorGreen";
           rAnsCnt++;
           line.RightAnsAmount++;
@@ -255,7 +265,19 @@ namespace FirstTryMVC5.Controllers {
     }
     //когда выбраны все темы, нужно выбрать строку из всей таблицы
     QuestionAnswer selectDBLine(IEnumerable<QuestionAnswer> dbLines, int leadUp) {
-      QuestionAnswer line = dbLines.Where(u => u.LeadUp != leadUp).OrderBy(u => u.RightAnsAmount).ThenBy(u => u.AskAmount).FirstOrDefault();
+      //получаем количество записей в таблице, которые !=leadUp
+      int count = dbLines.Where(u => u.LeadUp != leadUp).Count();
+      QuestionAnswer line;
+      if (count >= 1) {
+        //выбираем рандомно номер записи
+        Random rand = new Random();
+        int index = rand.Next(1, count);
+        //Пропускаем количество записей count-1, и запись(строку таблицы) с номером count возвращаем
+        line = dbLines.Where(u => u.LeadUp != leadUp).Skip(index - 1).Take(1).FirstOrDefault();
+        //QuestionAnswer line = dbLines.Where(u => u.LeadUp != leadUp).OrderBy(u => u.RightAnsAmount).ThenBy(u => u.AskAmount).FirstOrDefault();
+      } else {
+        line = null;
+      }
       if(line == null) {
         line = emptyLine();
       }
@@ -363,14 +385,14 @@ namespace FirstTryMVC5.Controllers {
           string line = null;
           string currentSubject = null;
           while((line = sr.ReadLine()) != null) {
-            if (line.StartsWith("#")) {//отбрем темы
+            if (line.StartsWith("#")) {//отберем темы
               currentSubject = line.Substring(1);
             } else if(currentSubject != "" && currentSubject != null) {
               string[] questionAnswer = line.Split(new char[] { '~' });
               testContext.QuestionAnswers.Add(new QuestionAnswer {
                 Subject = currentSubject,
                 Question = questionAnswer[0],
-                Answer = questionAnswer[1],
+                Answer = line.Replace(questionAnswer[0]+"~", ""),//questionAnswer[1],
                 AskAmount = 0,
                 RightAnsAmount = 0,
                 LeadUp = 0

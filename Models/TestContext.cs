@@ -7,5 +7,6 @@ using System.Data.Entity;
 namespace FirstTryMVC5.Models {
   public class TestContext : DbContext {
     public DbSet<QuestionAnswer> QuestionAnswers { get; set; }
+    public DbSet<MVCQuestionAnswer> MVCQuestionAnswers { get; set; }
   }
 }

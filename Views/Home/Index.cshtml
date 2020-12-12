@@ -27,6 +27,11 @@
     <div class="container">
       @*@using (Html.BeginForm("Index", "Home", FormMethod.Post, new { runat="server", DefaultButton="ChckBttn" })) {*@
       @using (Html.BeginForm("Index", "Home", FormMethod.Post)) {
+        <div class="dropdown btn-block" style="display: none;">
+          <button type="submit" class="btn btn-block btn_my dropdown-toggle" id="none_drop" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">first button</button>
+          <div class="dropdown-menu dropdown_my" aria-labelledby="none_drop">
+          </div>
+        </div>
         <div class="row border rounded">
           <div class="col-12">
             <div class="row justify-content-around my-3">
@@ -83,7 +88,7 @@
                     <div class="form-group">
                       <label for="answer">Ваш ответ</label>
                       <input type="text" name="answer" placeholder="Запишите ответ здесь"
-                             class="form-control @ViewBag.IsItRightAnswer" id="answer" value="@ViewBag.UserAnswer" autocomplete="off" readonly onkeypress="pressedEnter(event)" @ViewBag.Autofocus />
+                             class="form-control @ViewBag.IsItRightAnswer" id="answer" value="@ViewBag.UserAnswer" autocomplete="off"  onkeypress="pressedEnter(event)" @ViewBag.Autofocus />
                     </div>
                     <!-- </div> -->
                     <!-- <div class="row align-items-end"> -->
