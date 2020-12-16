@@ -131,7 +131,9 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\DBInitializer.cs" />
+    <Compile Include="Models\EnQuestionAnswer.cs" />
     <Compile Include="Models\MVCQuestionAnswer.cs" />
+    <Compile Include="Models\CQuestionAnswer.cs" />
     <Compile Include="Models\QuestionAnswer.cs" />
     <Compile Include="Models\TestContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -166,6 +168,7 @@
     <Content Include="Scripts\jquery-3.5.1.slim.js" />
     <Content Include="Scripts\jquery-3.5.1.slim.min.js" />
     <Content Include="Scripts\jquery.filedrop.js" />
+    <Content Include="Scripts\MyScripts\HeightChanger.js" />
     <Content Include="Scripts\MyScripts\MyAddToDB.js" />
     <Content Include="Scripts\MyScripts\MyIndex.js" />
     <Content Include="Scripts\index.js.flow" />
@@ -277,7 +280,7 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\AddToDbFromFile.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Home\Index1.cshtml" />
     <Content Include="Scripts\umd\popper.min.js.map" />
     <Content Include="Scripts\umd\popper.js.map" />
     <Content Include="Scripts\umd\popper.js.flow" />
@@ -290,6 +293,7 @@
     <Content Include="Scripts\popper-utils.js.map" />
     <Content Include="Views\Home\AddToDb.cshtml" />
     <Content Include="Views\Shared\_MyLayout.cshtml" />
+    <Content Include="Views\Home\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Scripts\index.d.ts" />

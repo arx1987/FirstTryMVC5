@@ -12,11 +12,12 @@
     </div>
     <div class="container">
       @using (Html.BeginForm("AddToDbFromFile", "Home", FormMethod.Post, new { enctype = "multipart/form-data" })) {
-        <div class="fl_upld row">
-          <label class="btn btn-block btn_my" id="upload_label"><input id="fl_inp" type="file" name="upload" /><span id="label_text">Выберите файл</span></label>
-          @*<div id="fl_nm" class="btn btn_my">Файл не выбран</div>*@
-          <input type="submit" value="Загрузить" class="btn btn-block btn_my" />
-        </div>
+      <div class="fl_upld row">
+        <input type="hidden" name="getModel" value="@ViewBag.GetModel" />
+        <label class="btn btn-block btn_my" id="upload_label"><input id="fl_inp" type="file" name="upload" /><span id="label_text">Выберите файл</span></label>
+        @*<div id="fl_nm" class="btn btn_my">Файл не выбран</div>*@
+        <input type="submit" value="Загрузить" class="btn btn-block btn_my" />
+      </div>
       }
       @*<h2>Drag & Drop file upload </h2>
         <div id="dropArea">

@@ -58,7 +58,9 @@
               <button class="btn btn-block btn_my mx-3 mb-3" id="addToDB" type="submit" name="action" value="addDataToDB">Добавить в базу</button>
             </div>
             <div class="row">
-              <div class="btn btn-block btn_my mx-3 mb-3" id="AddToDbFromFile" onclick="location.href='/Home/AddToDbFromFile'">Добавить данные в БД файлом</div>
+              @Html.ActionLink("Добавить данные в БД файлом", "AddToDbFromFile", "Home", new { getModel = ViewBag.GetModel }, new { @class = "btn btn-block btn_my mx-3 mb-3k", id = "AddToDbFromFile" })
+              @*<div class="btn btn-block btn_my mx-3 mb-3" id="AddToDbFromFile" onclick="location.href='/Home/AddToDbFromFile'">Добавить данные в БД файлом</div>*@
+              @*@Html.ActionLink("Добавить вопросы в БД", "AddToDb", "Home", new { getModel = ViewBag.GetModel }, new { @class = "btn btn_my btn-block", id = "addToDB" })*@
             </div>
           </div>
         </div>

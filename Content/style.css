@@ -50,6 +50,11 @@ body {
   min-width: 575px;
 }
 
+.chngHeight, .chngHeight:hover {
+  text-decoration: none;
+  color: white;
+}
+
 /*.border { border: 1px solid green; }*/
 .btn_my {
   /*+*/

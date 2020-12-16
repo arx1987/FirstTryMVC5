@@ -18,12 +18,34 @@ namespace FirstTryMVC5.Controllers {
 
     [HttpGet]
     public ActionResult Index() {
+      return View();
+    }
+
+    [HttpGet]
+    public ActionResult Index1(string pickTest) {
+      /*будем использовать различные модели в зависимости от того, какой параметр приходит со странички Index. Пока что такие варианты: C#, MVC, English.*/
+      //switch (pickTest) {
+      //  case "C#":
+      //    dbLines = testContext.CQuestionAnswers; ;
+      //    break;
+      //  case "MVC":
+      //    IEnumerable<MVCQuestionAnswer> dbLines;
+      //    break;
+      //  case "English":
+      //    IEnumerable<EnQuestionAnswer> dbLines;
+      //    break;
+      //}
+      //if (pickTest == "C#") { dbLines = testContext.CQuestionAnswers; }
+      //else if (pickTest == "MVC") { dbLines = testContext.MVCQuestionAnswers; }
+      //else { dbLines = testContext.EnQuestionAnswers ; }
+      dbLines = getRightModel(pickTest);
+      ViewBag.GetModel = pickTest;
       ViewBag.Subject = "Выбрать тему";
       ViewBag.DisabledCheck = "disabled";
       ViewBag.DisabledNext = "disabled";
       ViewBag.EnterButton = "testBut";
       //извлекаем данные из таблицы TestList
-      dbLines = testContext.QuestionAnswers;
+      //dbLines = testContext.QuestionAnswers;
       //ViewBag - динамический объект
       //получим из бд все темы
       ViewBag.AllSubjects = dbLines.Select(p => p.Subject).Distinct(); //new string[] { "1ая тема", "2ая тема", "3ья тема" };
@@ -33,12 +55,17 @@ namespace FirstTryMVC5.Controllers {
 
     [HttpPost]
     [MultiButton(Name = "action", Argument = "chooseSubject")]
-    public ActionResult chooseSubject(string dropdownSubject) {
+    public ActionResult chooseSubject(string dropdownSubject, string getModel) {
+      //if (model == "C#") { dbLines = testContext.CQuestionAnswers; }
+      //else if (model == "MVC") { dbLines = testContext.MVCQuestionAnswers; }
+      //else { dbLines = testContext.EnQuestionAnswers; }
       string subject = dropdownSubject;
       ViewBag.Subject = subject;
       ViewBag.AllSubjectsOn = "0";
-      //извлекаем данные из таблицы TestList
-      dbLines = testContext.QuestionAnswers;
+      //извлекаем данные из таблицы
+      //dbLines = testContext.CQuestionAnswers;
+      dbLines = getRightModel(getModel);
+      ViewBag.GetModel = getModel;
       //ViewBag - динамический объект
       //получим из бд все темы
       ViewBag.AllSubjects = dbLines.Select(p => p.Subject).Distinct();
@@ -71,13 +98,15 @@ namespace FirstTryMVC5.Controllers {
 
     [HttpPost]
     [MultiButton(Name = "action", Argument = "allSubjects")]
-    public ActionResult allSubjects(QuestionAnswer model) {
+    public ActionResult allSubjects(QuestionAnswer model, string getModel) {
       ViewBag.Subject = "Выбрать тему";
       ViewBag.Disabled = "disabled";
       ViewBag.AllSubjectsOn = "1";
       model.Subject = null;
       //извлекаем данные из таблицы TestList
-      dbLines = testContext.QuestionAnswers;
+      //dbLines = testContext.CQuestionAnswers;
+      dbLines = getRightModel(getModel);
+      ViewBag.GetModel = getModel;
       //получим из бд все темы
       ViewBag.AllSubjects = dbLines.Select(p => p.Subject).Distinct();
       //количество записей в таблице
@@ -102,7 +131,7 @@ namespace FirstTryMVC5.Controllers {
 
     [HttpPost]
     [MultiButton(Name = "action", Argument = "checkAnswer")]
-    public ActionResult checkAnswer(QuestionAnswer model, string allSubjectsOn, string questionAnswerListCount, string questionsLeft, string rightAnswersCount) {
+    public ActionResult checkAnswer(QuestionAnswer model, string allSubjectsOn, string questionAnswerListCount, string questionsLeft, string rightAnswersCount, string getModel) {
       /*логика
        получаем данные из формы, где вопрос-Question и тема - Subject соответствуют заданному пользователю вопросу из бд. Задача, получить именно эту строку вопроса из бд, сравнить ответ в бд с ответом пользователя и вывести результат
        1) получаем данные
@@ -119,7 +148,9 @@ namespace FirstTryMVC5.Controllers {
       //1)2)
       //переведем параметр правильных ответов в число
       int rAnsCnt = Convert.ToInt32(rightAnswersCount);
-      dbLines = testContext.QuestionAnswers;
+      //dbLines = testContext.CQuestionAnswers;
+      dbLines = getRightModel(getModel);
+      ViewBag.GetModel = getModel;
       ViewBag.AllSubjectsOn = allSubjectsOn;
       //получим из бд все темы
       ViewBag.AllSubjects = dbLines.Select(p => p.Subject).Distinct();
@@ -174,13 +205,15 @@ namespace FirstTryMVC5.Controllers {
 
     [HttpPost]
     [MultiButton(Name = "action", Argument = "nextQuestion")]
-    public ActionResult nextQuestion(QuestionAnswer model, string allSubjectsOn, string questionAnswerListCount, string questionsLeft, string rightAnswersCount) {
+    public ActionResult nextQuestion(QuestionAnswer model, string allSubjectsOn, string questionAnswerListCount, string questionsLeft, string rightAnswersCount, string getModel) {
       /*логика*/
       //переводим количество оставшихся вопросов в инт и отнимаем один
       int qLft = Convert.ToInt32(questionsLeft);
       qLft--;
       ViewBag.AllSubjectsOn = allSubjectsOn;
-      dbLines = testContext.QuestionAnswers;
+      //dbLines = testContext.CQuestionAnswers;
+      dbLines = getRightModel(getModel);
+      ViewBag.GetModel = getModel;
       QuestionAnswer line;
       //получим из бд все темы
       ViewBag.AllSubjects = dbLines.Select(p => p.Subject).Distinct();
@@ -237,7 +270,7 @@ namespace FirstTryMVC5.Controllers {
     [MultiButton(Name = "action", Argument = "testBut")]
     public ActionResult testBut(QuestionAnswer model, string allSubjectsOn) {
       ViewBag.AllSubjectsOn = allSubjectsOn;
-      dbLines = testContext.QuestionAnswers;
+      dbLines = testContext.CQuestionAnswers;
       ViewBag.Subject = model.Subject;
       QuestionAnswer line = selectDBLine(model.LeadUp, model.Subject, dbLines);
       ViewBag.EnterButton = "testBut";
@@ -254,9 +287,66 @@ namespace FirstTryMVC5.Controllers {
       }
     }
 
-    /*функция для получения строки из таблицы. возвращает объект QuestionAnswers, в качестве параметров принимает таблицу бд и какие-то ее колнки*/
-    //поиск по id
-    QuestionAnswer selectDBLine(int id, IEnumerable<QuestionAnswer> dbLines) {
+    /*метод для определения таблицы контекста данных*/
+    public IEnumerable<QuestionAnswer> getRightModel(string model) {
+      if (model == "C#") { dbLines = testContext.CQuestionAnswers; }
+      else if (model == "MVC") { dbLines = testContext.MVCQuestionAnswers; }
+      else { dbLines = testContext.EnQuestionAnswers; }
+      return dbLines;
+    }
+
+    /*метод для добавления в бд данных в соответствующую таблицу*/
+    void addToDbsTable(QuestionAnswer questionAnswer, string model) {
+      if (model == "C#") { testContext.CQuestionAnswers.Add((CQuestionAnswer)questionAnswer); }
+      else if (model == "MVC") { testContext.MVCQuestionAnswers.Add((MVCQuestionAnswer)questionAnswer); }
+      else { testContext.EnQuestionAnswers.Add((EnQuestionAnswer)questionAnswer); }
+    }
+
+    /*метод для добавлени в бд данных с файла в соответствующую таблицу*/
+    void addToDbsTableFromFile(string currentSubject, string[] questionAnswer, string line, string model) {
+      if (model == "C#") {testContext.CQuestionAnswers.Add(
+        new CQuestionAnswer {
+          Subject = currentSubject,
+          Question = questionAnswer[0],
+          Answer = line.Replace(questionAnswer[0] + "~", ""),//questionAnswer[1],
+          AskAmount = 0,
+          RightAnsAmount = 0,
+          LeadUp = 0
+        });
+      }
+      else if (model == "MVC") { testContext.MVCQuestionAnswers.Add(
+        new MVCQuestionAnswer {
+          Subject = currentSubject,
+          Question = questionAnswer[0],
+          Answer = line.Replace(questionAnswer[0] + "~", ""),//questionAnswer[1],
+          AskAmount = 0,
+          RightAnsAmount = 0,
+          LeadUp = 0
+        });
+      }
+      else { testContext.EnQuestionAnswers.Add(
+        new EnQuestionAnswer {
+          Subject = currentSubject,
+          Question = questionAnswer[0],
+          Answer = line.Replace(questionAnswer[0] + "~", ""),//questionAnswer[1],
+          AskAmount = 0,
+          RightAnsAmount = 0,
+          LeadUp = 0
+        });
+      }
+      //testContext.CQuestionAnswers.Add(new CQuestionAnswer {
+      //  Subject = currentSubject,
+      //  Question = questionAnswer[0],
+      //  Answer = line.Replace(questionAnswer[0]+"~", ""),//questionAnswer[1],
+      //  AskAmount = 0,
+      //  RightAnsAmount = 0,
+      //  LeadUp = 0
+      //});
+    }
+
+      /*функция для получения строки из таблицы. возвращает объект QuestionAnswers, в качестве параметров принимает таблицу бд и какие-то ее колонки*/
+      //поиск по id
+      QuestionAnswer selectDBLine(int id, IEnumerable<QuestionAnswer> dbLines) {
       QuestionAnswer line = dbLines.Where(u => u.Id == id).FirstOrDefault();
       if(line == null) {
         line = emptyLine();
@@ -316,11 +406,12 @@ namespace FirstTryMVC5.Controllers {
 
 
     /*-------------------------------------end of Home page-------------------------------------------------*/
-
-    public ActionResult AddToDb() {
+    public ActionResult AddToDb(string getModel) {
       ViewBag.Subject = "Выберите тему";
       //извлекаем данные из таблицы TestList
-      dbLines = testContext.QuestionAnswers;
+      //dbLines = testContext.CQuestionAnswers;
+      dbLines = getRightModel(getModel);
+      ViewBag.GetModel = getModel;
       //ViewBag - динамический объект
       //получим из бд все темы
       ViewBag.AllSubjects = dbLines.Select(p => p.Subject).Distinct(); //new string[] { "1ая тема", "2ая тема", "3ья тема" };
@@ -329,13 +420,15 @@ namespace FirstTryMVC5.Controllers {
 
     [HttpPost]
     [MultiButton(Name = "action", Argument = "chooseSubject2")]
-    public ActionResult chooseSubject2(string dropdownSubject, string Question, string Answer) {
+    public ActionResult chooseSubject2(string dropdownSubject, string Question, string Answer, string getModel) {
       //добавлены параметры Question, Answer -> если забыли указать тему, но заполнили поля формы - чтобы поля не исчезали, при выборе темы
       ViewBag.Subject = dropdownSubject;
       ViewBag.Question = Question;
       ViewBag.Answer = Answer;
       //извлекаем данные из таблицы TestList
-      dbLines = testContext.QuestionAnswers;
+      //dbLines = testContext.CQuestionAnswers;
+      dbLines = getRightModel(getModel);
+      ViewBag.GetModel = getModel;
       //получим из бд все темы
       ViewBag.AllSubjects = dbLines.Select(p => p.Subject).Distinct();
       return View();
@@ -344,9 +437,13 @@ namespace FirstTryMVC5.Controllers {
 
     [HttpPost]
     [MultiButton(Name = "action", Argument = "addDataToDB")]
-    public ActionResult addDataToDB(QuestionAnswer questionAnswer, string dropdownSubject) {
-      dbLines = testContext.QuestionAnswers;
-      testContext.QuestionAnswers.Add(questionAnswer);
+    public ActionResult addDataToDB(QuestionAnswer questionAnswer, string dropdownSubject, string getModel) {
+      //dbLines = testContext.CQuestionAnswers;
+      dbLines = getRightModel(getModel);
+      ViewBag.GetModel = getModel;
+      //добавим данные в соответствующую таблицу
+      //testContext.CQuestionAnswers.Add(questionAnswer);
+      addToDbsTable(questionAnswer, getModel);
       testContext.SaveChanges();
       //получим из бд все темы
       ViewBag.AllSubjects = dbLines.Select(p => p.Subject).Distinct();
@@ -358,7 +455,8 @@ namespace FirstTryMVC5.Controllers {
     /*------------------------------end of AddToDb ------------------------------------------------------*/
 
     [HttpGet]
-    public ActionResult AddToDbFromFile() {
+    public ActionResult AddToDbFromFile(string getModel) {
+      ViewBag.GetModel = getModel;
       return View();
     }
 
@@ -372,7 +470,7 @@ namespace FirstTryMVC5.Controllers {
       return Content("Success");
      } 
      */
-  public ActionResult AddToDbFromFile(HttpPostedFileBase upload) {
+  public ActionResult AddToDbFromFile(HttpPostedFileBase upload, string getModel) {
       if(upload != null) { 
         //полчаем имя файла
         string fileName = System.IO.Path.GetFileName(upload.FileName);
@@ -389,14 +487,15 @@ namespace FirstTryMVC5.Controllers {
               currentSubject = line.Substring(1);
             } else if(currentSubject != "" && currentSubject != null) {
               string[] questionAnswer = line.Split(new char[] { '~' });
-              testContext.QuestionAnswers.Add(new QuestionAnswer {
-                Subject = currentSubject,
-                Question = questionAnswer[0],
-                Answer = line.Replace(questionAnswer[0]+"~", ""),//questionAnswer[1],
-                AskAmount = 0,
-                RightAnsAmount = 0,
-                LeadUp = 0
-              });
+              addToDbsTableFromFile(currentSubject, questionAnswer, line, getModel);
+              //testContext.CQuestionAnswers.Add(new CQuestionAnswer {
+              //  Subject = currentSubject,
+              //  Question = questionAnswer[0],
+              //  Answer = line.Replace(questionAnswer[0]+"~", ""),//questionAnswer[1],
+              //  AskAmount = 0,
+              //  RightAnsAmount = 0,
+              //  LeadUp = 0
+              //});
             }
           }
           testContext.SaveChanges();
