@@ -1,0 +1,88 @@
+﻿@model FirstTryMVC5.Models.QuestionAnswer
+@{
+  ViewBag.Title = "SearchResults";
+}
+
+<div class="container-fluid a_block">
+  <div class="row align-items-center no-gutters">
+
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-3 p-3 h4" id="toMain"><a href="/Home/Index">На главную</a></div>
+        <div class="col-9 p-2 h3 text-center">Результаты поиска в таблице @ViewBag.getModel</div>
+      </div>
+      <div class="row justify-content-center mb-4">
+        <div class="col-2 border-right">Тема</div>
+        <div class="col-5 border-right">Вопрос</div>
+        <div class="col-3">Ответ</div>
+        <div class="col-2"></div>
+      </div>
+        @foreach (var s in ViewBag.SearchResults) {
+          <div class="row justify-content-center mb-4">
+            <div class="col-2 border-right">@s.Subject</div>
+            <div class="col-5 border-right">@s.Question</div>
+            <div class="col-3 border-right">@s.Answer</div>
+            <div class="col-2">Изменить</div>
+          </div>
+        }
+      </div>
+    </div>
+</div>
+      @*<div>
+        <h4>QuestionAnswer</h4>
+        <hr />
+        <dl class="dl-horizontal">
+          <dt>
+            @Html.DisplayNameFor(model => model.Subject)
+          </dt>
+
+          <dd>
+            @Html.DisplayFor(model => model.Subject)
+          </dd>
+
+          <dt>
+            @Html.DisplayNameFor(model => model.Question)
+          </dt>
+
+          <dd>
+            @Html.DisplayFor(model => model.Question)
+          </dd>
+
+          <dt>
+            @Html.DisplayNameFor(model => model.Answer)
+          </dt>
+
+          <dd>
+            @Html.DisplayFor(model => model.Answer)
+          </dd>
+
+          <dt>
+            @Html.DisplayNameFor(model => model.AskAmount)
+          </dt>
+
+          <dd>
+            @Html.DisplayFor(model => model.AskAmount)
+          </dd>
+
+          <dt>
+            @Html.DisplayNameFor(model => model.RightAnsAmount)
+          </dt>
+
+          <dd>
+            @Html.DisplayFor(model => model.RightAnsAmount)
+          </dd>
+
+          <dt>
+            @Html.DisplayNameFor(model => model.LeadUp)
+          </dt>
+
+          <dd>
+            @Html.DisplayFor(model => model.LeadUp)
+          </dd>
+
+        </dl>
+      </div>*@
+      @*<p>
+        @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+        @Html.ActionLink("Back to List", "Index")
+      </p>*@

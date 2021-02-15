@@ -101,12 +101,20 @@ body {
   width: inherit;
 }
 
+.dropdown_item_my {
+  word-wrap: break-word !important;
+  white-space: break-spaces;
+}
+
 .dropdown_item_my:hover {
   color: #effb05;
   text-decoration: none;
   background-color: #00a74b;
 }
 
+.dropdown_index1 {
+  min-width: 50rem;
+}
 .btn_my_inactive, .btn_my_inactive:hover, .btn_my_inactive:focus, .btn_my_inactive:active {
   color: #fff;
   background-color: #6c757d;
@@ -150,6 +158,9 @@ body {
   }
 
   #toMain > a {
+    color: white;
+  }
+  #toMain {
     color: white;
   }
 /*меню*/

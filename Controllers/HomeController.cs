@@ -38,6 +38,9 @@ namespace FirstTryMVC5.Controllers {
       //if (pickTest == "C#") { dbLines = testContext.CQuestionAnswers; }
       //else if (pickTest == "MVC") { dbLines = testContext.MVCQuestionAnswers; }
       //else { dbLines = testContext.EnQuestionAnswers ; }
+      if (pickTest == null) {
+        return View("Index");
+      }
       dbLines = getRightModel(pickTest);
       ViewBag.GetModel = pickTest;
       ViewBag.Subject = "Выбрать тему";
@@ -79,9 +82,9 @@ namespace FirstTryMVC5.Controllers {
       Random rand1 = new Random();
       int leadUp = rand1.Next(1, 30000);
       //string leadUpStr = leadUp.ToString();
-      QuestionAnswer dbLine = dbLines.Where(p => p.Subject == subject).Skip(index-1).Take(1).FirstOrDefault();
+      QuestionAnswer dbLine = dbLines.Where(p => p.Subject == subject).Skip(index - 1).Take(1).FirstOrDefault();
       //QuestionAnswer dbLine = dbLines.Where(p => p.Id == index).FirstOrDefault();
-      ViewBag.QuestionsLeft = count-1;
+      ViewBag.QuestionsLeft = count - 1;
       ViewBag.RightAnswersCount = 0;
       /*----------------*/
       dbLine.LeadUp = leadUp;
@@ -155,7 +158,7 @@ namespace FirstTryMVC5.Controllers {
       //получим из бд все темы
       ViewBag.AllSubjects = dbLines.Select(p => p.Subject).Distinct();
       QuestionAnswer line;
-      if(allSubjectsOn == "1") {
+      if (allSubjectsOn == "1") {
         //если тема не выбрана
         ViewBag.Subject = "Выбрать тему";
         //line = selectDBLine(dbLines, model.LeadUp);
@@ -168,10 +171,10 @@ namespace FirstTryMVC5.Controllers {
       line = selectDBLine(model.Id, dbLines);
       if (line != null) {
         line.AskAmount++;
-        string usrAnsTrimToLower = model.Answer.ToLower().Trim();
+        string usrAnsTrimToLower = (model.Answer == null) ? "" : model.Answer.ToLower().Trim();
         bool isRightAnswer = false;
         string[] rightAnswers = line.Answer.Split('~');
-        foreach(string s in rightAnswers) {
+        foreach (string s in rightAnswers) {
           if (usrAnsTrimToLower == s.ToLower().Trim())
             isRightAnswer = true;
         }
@@ -179,15 +182,17 @@ namespace FirstTryMVC5.Controllers {
           ViewBag.IsItRightAnswer = "colorGreen";
           rAnsCnt++;
           line.RightAnsAmount++;
+          ViewBag.RightAnswer = model.Answer;
         }
         else {
           ViewBag.IsItRightAnswer = "colorRed";
+          ViewBag.RightAnswer = rightAnswers[0];
         }
         //4)5)
         ViewBag.UserAnswer = model.Answer;
         //ViewBag.IsItRightAnswer = (userAnswer == rightCurrentAnswer) ? "colorGreen" : "colorRed";
         //6)
-        ViewBag.RightAnswer = line.Answer;
+
         testContext.SaveChanges();
       } else {
         ViewBag.RightAnswer = "ошибка в программе, строка не найдена в бд";
@@ -219,7 +224,7 @@ namespace FirstTryMVC5.Controllers {
       ViewBag.AllSubjects = dbLines.Select(p => p.Subject).Distinct();
       /*В зависимости от того выбрана одна тема или все темы, нужны разные запросы к бд. Чтобы показать следующий вопрос*/
       //if (model.Subject == null) {
-      if(allSubjectsOn == "1") { 
+      if (allSubjectsOn == "1") {
         //если тема не выбрана - т.е. выбраны все темы
         ViewBag.Subject = "Выбрать тему";
         line = selectDBLine(dbLines, model.LeadUp);
@@ -228,7 +233,7 @@ namespace FirstTryMVC5.Controllers {
         ViewBag.Subject = model.Subject;
         line = selectDBLine(model.LeadUp, model.Subject, dbLines);
       }
-      if(line.Id != -1) {
+      if (line.Id != -1) {
         line.AskAmount++;
         line.LeadUp = model.LeadUp;
         testContext.SaveChanges();
@@ -248,8 +253,8 @@ namespace FirstTryMVC5.Controllers {
           Id = -1,
           Subject = "not found",
           Question = "Вы прошли все вопросы этой темы. " +
-          "\nВсего вопросов: " + questionAnswerListCount + 
-          "\nПравильных ответов: " + rightAnswersCount + 
+          "\nВсего вопросов: " + questionAnswerListCount +
+          "\nПравильных ответов: " + rightAnswersCount +
           "\nВыберите следующую тему",
           Answer = "not found",
           AskAmount = 0,
@@ -304,15 +309,15 @@ namespace FirstTryMVC5.Controllers {
 
     /*метод для добавлени в бд данных с файла в соответствующую таблицу*/
     void addToDbsTableFromFile(string currentSubject, string[] questionAnswer, string line, string model) {
-      if (model == "C#") {testContext.CQuestionAnswers.Add(
-        new CQuestionAnswer {
-          Subject = currentSubject,
-          Question = questionAnswer[0],
-          Answer = line.Replace(questionAnswer[0] + "~", ""),//questionAnswer[1],
+      if (model == "C#") { testContext.CQuestionAnswers.Add(
+         new CQuestionAnswer {
+           Subject = currentSubject,
+           Question = questionAnswer[0],
+           Answer = line.Replace(questionAnswer[0] + "~", ""),//questionAnswer[1],
           AskAmount = 0,
-          RightAnsAmount = 0,
-          LeadUp = 0
-        });
+           RightAnsAmount = 0,
+           LeadUp = 0
+         });
       }
       else if (model == "MVC") { testContext.MVCQuestionAnswers.Add(
         new MVCQuestionAnswer {
@@ -344,11 +349,11 @@ namespace FirstTryMVC5.Controllers {
       //});
     }
 
-      /*функция для получения строки из таблицы. возвращает объект QuestionAnswers, в качестве параметров принимает таблицу бд и какие-то ее колонки*/
-      //поиск по id
-      QuestionAnswer selectDBLine(int id, IEnumerable<QuestionAnswer> dbLines) {
+    /*функция для получения строки из таблицы. возвращает объект QuestionAnswers, в качестве параметров принимает таблицу бд и какие-то ее колонки*/
+    //поиск по id
+    QuestionAnswer selectDBLine(int id, IEnumerable<QuestionAnswer> dbLines) {
       QuestionAnswer line = dbLines.Where(u => u.Id == id).FirstOrDefault();
-      if(line == null) {
+      if (line == null) {
         line = emptyLine();
       }
       return line;
@@ -368,21 +373,21 @@ namespace FirstTryMVC5.Controllers {
       } else {
         line = null;
       }
-      if(line == null) {
+      if (line == null) {
         line = emptyLine();
       }
       return line;
     }
     //когда выбрана тема, нужно отобрать строку в теме
     QuestionAnswer selectDBLine(int leadUp, string subject, IEnumerable<QuestionAnswer> dbLines) {
-     QuestionAnswer line = dbLines.Where(u => u.Subject == subject).Where(u => u.LeadUp != leadUp).OrderBy(u => u.RightAnsAmount).ThenBy(u => u.AskAmount).FirstOrDefault();
-        //line = dbLines.Where(u => u.Subject == subject).Where(u => u.Id == id).FirstOrDefault();
-        //var query1 = from u in dbLines
-        //            where u.LeadUp != leadUp
-        //            where u.Subject == subject
-        //            where u.Id == id
-        //            select u;
-        //return new QuestionAnswers();
+      QuestionAnswer line = dbLines.Where(u => u.Subject == subject).Where(u => u.LeadUp != leadUp).OrderBy(u => u.RightAnsAmount).ThenBy(u => u.AskAmount).FirstOrDefault();
+      //line = dbLines.Where(u => u.Subject == subject).Where(u => u.Id == id).FirstOrDefault();
+      //var query1 = from u in dbLines
+      //            where u.LeadUp != leadUp
+      //            where u.Subject == subject
+      //            where u.Id == id
+      //            select u;
+      //return new QuestionAnswers();
       /* если line = null, то тест закончен, нет больше доступных строк в базе, которые ты еще не прошел, а занчит, нужно предложить пройти этот тест сначала или начать другие тесты*/
       if (line == null) {
         line = emptyLine();
@@ -404,9 +409,11 @@ namespace FirstTryMVC5.Controllers {
       return new QuestionAnswer() { Id = -1, Subject = "not found", Question = "not found", Answer = "not found", AskAmount = 0, RightAnsAmount = 0, LeadUp = -1 };
     }
 
-
     /*-------------------------------------end of Home page-------------------------------------------------*/
     public ActionResult AddToDb(string getModel) {
+      if (getModel == null) {
+        return View("Index");
+      }
       ViewBag.Subject = "Выберите тему";
       //извлекаем данные из таблицы TestList
       //dbLines = testContext.CQuestionAnswers;
@@ -453,9 +460,116 @@ namespace FirstTryMVC5.Controllers {
       return View();
     }
     /*------------------------------end of AddToDb ------------------------------------------------------*/
+    /*-----start ChangeDBLine----------*/
+    [HttpGet]
+    public ActionResult FindDBLine(string getModel) {
+      if (getModel == null) {
+        return View("Index");
+      }
+      ViewBag.GetModel = getModel;
+      ViewBag.FindDBLineBut = "Найти";
+      ViewBag.DisplayDiv = "none";
+      return View();
+    }
+
+    [HttpPost]
+    public ActionResult FindDBLine(string findQuestion, string getModel) {
+      if (getModel == null) {
+        return View("Index");
+      }
+      ViewBag.GetModel = getModel;
+      if (findQuestion == null) {
+        ViewBag.GetModel = getModel;
+        ViewBag.FindDBLineBut = "Найти";
+        ViewBag.DisplayDiv = "none";
+        return View();
+      } else {
+        dbLines = getRightModel(getModel);
+        //блок поиска в бд в определенной таблице getModel
+        ViewBag.SearchResults = dbLines.Where(u => u.Question.Contains(findQuestion));
+        //если в этой таблице не было найдено совпадений с findQueston
+        if (ViewBag.SearchResults == null) {
+          ViewBag.ThereIsNoResultInDB = "В Таблице " + getModel + " не было найдено совпадений со строкой " + findQuestion;
+          ViewBag.DisplayDiv = "none";
+        } else {
+          ViewBag.DisplayDiv = "block";
+          return View();
+        }
+        //
+
+      }
+      return View();
+    }
+    /*-----end of FindDBLine---------*/
+    /*-----start of EditDBLine---------*/
+    [HttpGet]
+    public ActionResult EditDBLine(int? id, string subject, string question, string answer, string getModel) {
+      if (getModel == null || id == null) {
+        return View("Index");
+      }
+      ViewBag.GetModel = getModel;
+      ViewBag.Id = id;
+      ViewBag.Subject = subject;
+      ViewBag.Question = question;
+      ViewBag.Answer = answer;
+      return View();
+    } 
+
+    [HttpPost]
+    public ActionResult EditDBLine(string getModel) {
+      if (getModel == null) {
+        return View("Index");
+      }
+      ViewBag.GetModel = getModel;
+      int id;
+      if (!(Int32.TryParse(Request.Form["id"], out id))) {
+        ViewBag.ThereIsNotResultInDb = "Изменения не были сохранены, так как такая строка не найдена";
+        ViewBag.GetModel = getModel;
+        ViewBag.FindDBLineBut = "Найти";
+        ViewBag.DisplayDiv = "none";
+        return View("FindDBLine");
+      } else {
+        //dbLines = getRightModel(getModel);
+        //QuestionAnswer line = selectDBLine(Convert.ToInt32(Request.Form["id"]), dbLines );
+        string question = Request.Form["Question"];
+        string answer = Request.Form["Answer"];
+        string subject = Request.Form["Subject"];
+        if (getModel == "C#") {
+          CQuestionAnswer line = testContext.CQuestionAnswers.Where(u => u.Id == id).FirstOrDefault();
+          line.Answer = answer;
+          line.Question = question;
+          line.Subject = subject;
+          testContext.Entry(line).State = System.Data.Entity.EntityState.Modified;
+          testContext.SaveChanges();
+        } else if(getModel == "MVC") {
+          MVCQuestionAnswer line = testContext.MVCQuestionAnswers.Where(u => u.Id == id).FirstOrDefault();
+          line.Answer = answer;
+          line.Question = question;
+          line.Subject = subject;
+          testContext.Entry(line).State = System.Data.Entity.EntityState.Modified;
+          testContext.SaveChanges();
+        } else {
+          EnQuestionAnswer line = testContext.EnQuestionAnswers.Where(u => u.Id == id).FirstOrDefault();
+          line.Answer = answer;
+          line.Question = question;
+          line.Subject = subject;
+          testContext.Entry(line).State = System.Data.Entity.EntityState.Modified;
+          testContext.SaveChanges();
+        }
+        ViewBag.ThereIsNotResultInDb = "Изменения были сохранены";
+        ViewBag.GetModel = getModel;
+        ViewBag.FindDBLineBut = "Найти";
+        ViewBag.DisplayDiv = "none";
+        return View("FindDBLine");
+      }
+    }
+    /*-----end of EditDBLine---------*/
 
     [HttpGet]
     public ActionResult AddToDbFromFile(string getModel) {
+      if (getModel == null) {
+        return View("Index");
+      }      
       ViewBag.GetModel = getModel;
       return View();
     }
@@ -502,6 +616,9 @@ namespace FirstTryMVC5.Controllers {
         }
         //нужно удалить файл, который сохранился в Uploads
         System.IO.File.Delete(path);
+        ViewBag.DataHaveBeenAdded = "Данные были успешно добавлены в таблицу " + getModel;
+      } else {
+        ViewBag.DataHaveBeenAdded = "Данные не были добавлены в таблицу " + getModel;
       }
       return View();
     }

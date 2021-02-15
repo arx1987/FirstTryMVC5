@@ -1,0 +1,32 @@
+﻿@{
+  ViewBag.Title = "EditDBLine";
+}
+<div class="container-fluid a_block">
+  <div class="row align-items-center no-gutters">
+
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-3 p-3 h4" id="toMain"><a href="/Home/Index">На главную</a></div>
+        <div class="col-9 p-2 h3 text-center">Изменить строку в БД, таблица @ViewBag.getModel</div>
+      </div>
+    </div>
+    <div class="container">
+      @using (Html.BeginForm("EditDBLine", "Home", FormMethod.Post, new { enctype = "multipart/form-data" })) {
+        <input type="hidden" name="getModel" value="@ViewBag.GetModel" />
+        <input type="hidden" name="id" value="@ViewBag.Id" />
+        <div class="form-group col">
+          <label for="Subject">Тема</label>
+          <input type="text" name="Subject" value="@ViewBag.Subject" class="form-control" id="Subject" autocomplete="off" />
+          <label for="Question">Вопрос</label>
+          <input type="text" name="Question" value="@ViewBag.Question" class="form-control" id="Subject" autocomplete="off" />
+          <label for="Answer">Правильный ответ</label>
+          <input type="text" name="Answer" value="@ViewBag.Answer" class="form-control" id="Subject" autocomplete="off" />
+        </div>
+        <input type="submit" value="Изменить" class="btn btn-block btn_my" />
+      }
+      <div class="row">
+        <div class="col text-center">@ViewBag.ThereIsNoResultInDB</div>
+      </div>
+    </div>
+  </div>
+</div>

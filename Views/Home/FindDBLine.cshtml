@@ -1,0 +1,48 @@
+﻿@{
+  ViewBag.Title = "FindDBLine";
+}
+<div class="container-fluid a_block">
+  <div class="row align-items-center no-gutters">
+
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-3 p-3 h4" id="toMain"><a href="/Home/Index">На главную</a></div>
+        <div class="col-9 p-2 h3 text-center">Изменить строку в БД, таблица @ViewBag.getModel</div>
+      </div>
+    </div>
+    <div class="container">
+      @using (Html.BeginForm("FindDBLine", "Home", FormMethod.Post, new { enctype = "multipart/form-data" })) {
+        <input type="hidden" name="getModel" value="@ViewBag.GetModel" />
+        <div class="form-group col">
+          <label for="findQuestion">Введите текст искомого вопроса</label>
+          <input type="text" name="findQuestion" placeholder="Введите здесь вопрос, текст которого хотели бы изменить" class="form-control" id="findQuestion" autocomplete="off" />
+        </div>
+        <input type="submit" value="@ViewBag.FindDBLineBut" class="btn btn-block btn_my" />
+      }
+      <div class="row">
+        <div class="col text-center">@ViewBag.ThereIsNoResultInDB</div>
+      </div>
+    </div>
+    <div class="container" style="display: @ViewBag.DisplayDiv">
+      <div class="row justify-content-center mb-4">
+        <div class="col-2 border-right">Тема</div>
+        <div class="col-5 border-right">Вопрос</div>
+        <div class="col-3">Ответ</div>
+        <div class="col-2"></div>
+      </div>
+      @if (ViewBag.SearchResults != null) {
+        foreach (var s in ViewBag.SearchResults) {
+          <div class="row justify-content-center mb-4">
+            <div class="col-2 border-right">@s.Subject</div>
+            <div class="col-5 border-right">@s.Question</div>
+            <div class="col-3 border-right">@s.Answer</div>
+            @*<div class="col-2"><a href="/Home/EditDBLine/?id=@s.Id&subject=@s.Subject&question=@s.Question&answer=@s.Answer&getModel=@ViewBag.GetModel">Изменить</a></div>*@
+            <div class="col-2">
+              @Html.ActionLink("Изменить", "EditDbLine", "Home", new { id = (int?)s.Id, subject = s.Subject, question = s.Question, answer = s.Answer, getModel = ViewBag.GetModel }, null)
+            </div>
+          </div>
+        }
+      }
+    </div>
+  </div>
+</div>
