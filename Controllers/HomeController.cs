@@ -380,14 +380,18 @@ namespace FirstTryMVC5.Controllers {
     }
     //когда выбрана тема, нужно отобрать строку в теме
     QuestionAnswer selectDBLine(int leadUp, string subject, IEnumerable<QuestionAnswer> dbLines) {
-      QuestionAnswer line = dbLines.Where(u => u.Subject == subject).Where(u => u.LeadUp != leadUp).OrderBy(u => u.RightAnsAmount).ThenBy(u => u.AskAmount).FirstOrDefault();
-      //line = dbLines.Where(u => u.Subject == subject).Where(u => u.Id == id).FirstOrDefault();
-      //var query1 = from u in dbLines
-      //            where u.LeadUp != leadUp
-      //            where u.Subject == subject
-      //            where u.Id == id
-      //            select u;
-      //return new QuestionAnswers();
+      int count = dbLines.Where(u => u.Subject == subject).Where(u => u.LeadUp != leadUp).Count();
+      QuestionAnswer line;
+      if (count >= 1) {
+        //выбираем рандомно номер записи
+        Random rand = new Random();
+        int index = rand.Next(1, count);
+        //Пропускаем количество записей count-1, и запись(строку таблицы) с номером count возвращаем
+        line = dbLines.Where(u => u.Subject == subject).Where(u => u.LeadUp != leadUp).Skip(index - 1).Take(1).FirstOrDefault();
+      }
+      else {
+        line = null;
+      }
       /* если line = null, то тест закончен, нет больше доступных строк в базе, которые ты еще не прошел, а занчит, нужно предложить пройти этот тест сначала или начать другие тесты*/
       if (line == null) {
         line = emptyLine();
